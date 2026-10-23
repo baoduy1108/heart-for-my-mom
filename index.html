@@ -1,0 +1,150 @@
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>❤️</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    height: 100vh;
+    overflow: hidden;
+    background: radial-gradient(ellipse at center, #290b35, #08010d 75%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.heart {
+    position: relative;
+    width: 130px;
+    height: 130px;
+    background: #ff1767;
+    transform: rotate(-45deg);
+    animation: heartbeat 1.2s infinite ease-in-out;
+    box-shadow: 0 0 25px #ff1767,
+                0 0 60px #ff1767,
+                0 0 110px #ff1767;
+}
+
+.heart::before,
+.heart::after {
+    content: "";
+    position: absolute;
+    width: 130px;
+    height: 130px;
+    border-radius: 50%;
+    background: #ff1767;
+}
+
+.heart::before { top: -65px; left: 0; }
+.heart::after { top: 0; left: 65px; }
+
+@keyframes heartbeat {
+    0%, 100% { transform: rotate(-45deg) scale(1); }
+    25% { transform: rotate(-45deg) scale(1.12); }
+    50% { transform: rotate(-45deg) scale(1); }
+    75% { transform: rotate(-45deg) scale(1.08); }
+}
+
+.sparkle {
+    position: absolute;
+    color: #ffd4eb;
+    font-size: 12px;
+    animation: float 4s linear infinite;
+    text-shadow: 0 0 12px #ff69b4;
+}
+
+@keyframes float {
+    0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+    15% { opacity: 1; }
+    85% { opacity: 1; }
+    100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
+}
+
+@media (max-width: 500px) {
+    .heart {
+        transform: rotate(-45deg) scale(.75);
+    }
+    @keyframes heartbeat {
+        0%, 100% { transform: rotate(-45deg) scale(.75); }
+        25% { transform: rotate(-45deg) scale(.86); }
+        50% { transform: rotate(-45deg) scale(.75); }
+        75% { transform: rotate(-45deg) scale(.82); }
+    }
+}
+</style>
+</head>
+<body>
+<canvas id="stars"></canvas>
+<div class="heart"></div>
+
+<script>
+const canvas = document.getElementById("stars");
+const ctx = canvas.getContext("2d");
+let w, h, particles = [];
+
+function resize() {
+    w = canvas.width = innerWidth;
+    h = canvas.height = innerHeight;
+    particles = Array.from({length: 100}, () => ({
+        x: Math.random() * w,
+        y: Math.random() * h,
+        r: Math.random() * 2 + 0.5,
+        speed: Math.random() * 0.7 + 0.2,
+        alpha: Math.random()
+    }));
+}
+
+function draw() {
+    ctx.clearRect(0, 0, w, h);
+
+    particles.forEach(p => {
+        p.y -= p.speed;
+        if (p.y < 0) {
+            p.y = h;
+            p.x = Math.random() * w;
+        }
+
+        p.alpha += (Math.random() - 0.5) * 0.08;
+        p.alpha = Math.max(0.15, Math.min(1, p.alpha));
+
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255,180,225,${p.alpha})`;
+        ctx.shadowBlur = 12;
+        ctx.shadowColor = "#ff4fa3";
+        ctx.fill();
+    });
+
+    ctx.shadowBlur = 0;
+    requestAnimationFrame(draw);
+}
+
+function createSparkles() {
+    const s = document.createElement("div");
+    s.className = "sparkle";
+    s.textContent = Math.random() > 0.5 ? "✦" : "♥";
+    s.style.left = Math.random() * 100 + "vw";
+    s.style.fontSize = Math.random() * 16 + 8 + "px";
+    s.style.animationDuration = Math.random() * 4 + 3 + "s";
+    document.body.appendChild(s);
+    setTimeout(() => s.remove(), 7000);
+}
+
+window.addEventListener("resize", resize);
+resize();
+draw();
+setInterval(createSparkles, 180);
+</script>
+</body>
+</html>
